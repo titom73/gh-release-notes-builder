@@ -5,7 +5,7 @@ Work In Progress
 
 ## Todo
 
-- [ ] Add template for rendering: AVD and CVP format
-- [ ] Add section for CV supported version
+- [x] Add template for rendering: AVD and CVP format
+- [x] Add section for CV supported version
 - [ ] Add Section for documentation
 - [x] Add code documentation

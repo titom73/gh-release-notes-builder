@@ -22,17 +22,15 @@ import logging
 import pprint
 import requests
 import sys
+import jinja2
+
 
 # CONSTANTS
 
 # API URI to use to get Milestone information.
 GH_API_MILESTONE = "https://api.github.com/search/issues?q=milestone:{}+type:pr+repo:{}"
-# Pull Request entry line format
-PR_ENTRY = "{} (#{})"
-# Release Note format for single entry
-RN_ENTRY = "- {}"
-# Release Note format for authors.
-RN_AUTHOR = "@{}"
+# Default template file
+TEMPLATE_FILE = "avd.j2"
 
 
 def parse_cli():
@@ -52,6 +50,11 @@ def parse_cli():
                         default='aristanetworks/ansible-avd')
     parser.add_argument('-m', '--milestone',
                         help='Milestone', type=str)
+    parser.add_argument('-t', '--template',
+                        help='Path to template', type=str,
+                        default=TEMPLATE_FILE)
+    parser.add_argument('-o', '--output',
+                        help='File to save release-notes', type=str)
     parser.add_argument('-v', '--verbosity',
                         help='Verbose level (debug / info / warning / error / critical)',
                         type=str, default='info')
@@ -84,53 +87,6 @@ def gh_get_milestone_content(repository, milestone):
     return None
 
 
-def is_labelled(pr, searched_label):
-    """
-    Test if given PR has searched_label configured.
-
-    Parameters
-    ----------
-    pr : dict
-        PR from GH JSON dataset
-    searched_label : string
-        label to look for on the given PR
-
-    Returns
-    -------
-    boolean
-        True if label is configured, False if not
-    """
-    for label in pr['labels']:
-        if label['name'] == searched_label:
-            return True
-    return False
-
-
-def parse_pr(milestone_prs, label):
-    """
-    Read milestone JSON and get PR information.
-
-    Parameters
-    ----------
-    milestone_prs : dict
-        JSON data from GH API
-    label : string
-        Label PR must have to be extracted.
-
-    Returns
-    -------
-    list
-        List of PRs with correct label.
-    """
-    list_pr = list()
-    for pr in milestone_prs:
-        if is_labelled(pr, searched_label=label):
-            logging.debug('* Found one PR: %s', pr['title'])
-            pr_summary = PR_ENTRY.format(pr['title'], str(pr['number']))
-            list_pr.append(pr_summary)
-    return list_pr
-
-
 def get_contributors(milestone_prs):
     """
     Extract list of PR contributors for milestone.
@@ -149,6 +105,38 @@ def get_contributors(milestone_prs):
     for pr in milestone_prs:
         author.append(pr['user']['login'])
     return list(dict.fromkeys(author))
+
+
+def templater(milestone, milestone_json, contributors=list(), template_file=TEMPLATE_FILE):
+    """
+    Generate Release Notes document based on J2 template
+
+    Parameters
+    ----------
+    milestone : string
+        Milestone name
+    milestone_json : dict
+        JSON data from GH API
+    contributors : list, optional
+        List of contirubutors for given milestone, by default list()
+    template_file : str, optional
+        Name of template to use for RN rendering, by default TEMPLATE_FILE
+
+    Returns
+    -------
+    string
+        Release Notes content
+    """
+    templateLoader = jinja2.FileSystemLoader(searchpath="./templates/")
+    templateEnv = jinja2.Environment(loader=templateLoader,
+                                     autoescape=True,
+                                     trim_blocks=True,
+                                     lstrip_blocks=True)
+    template = templateEnv.get_template(template_file)
+    output_from_parsed_template = template.render(milestone_name=milestone,
+                                                  milestone_json=milestone_json,
+                                                  contributors=contributors)
+    return output_from_parsed_template
 
 
 if __name__ == '__main__':
@@ -174,20 +162,18 @@ if __name__ == '__main__':
     logging.debug("Collecting information for milestone %s in repo %s", str(cli.milestone), str(cli.repository))
 
     milestone_content = gh_get_milestone_content(repository=cli.repository, milestone=cli.milestone)
-    # logging.debug("%s", str(pp.pprint(milestone_content)))
-    print("\n# Release Notes for {}".format(cli.milestone))
-    print("\n## Fixed issues\n")
-    for issue in parse_pr(milestone_prs=milestone_content['items'], label='type: bug'):
-        print(RN_ENTRY.format(issue))
-    print("\n## Enhancements\n")
-    for issue in parse_pr(milestone_prs=milestone_content['items'], label='type: enhancement'):
-        print(RN_ENTRY.format(issue))
-    for issue in parse_pr(milestone_prs=milestone_content['items'], label='type: simple enhancement'):
-        print(RN_ENTRY.format(issue))
-    print("\n## Documentation updates\n")
-    for issue in parse_pr(milestone_prs=milestone_content['items'], label='type: documentation'):
-        print(RN_ENTRY.format(issue))
-    print("\n## Contributors\n")
-    for author in get_contributors(milestone_prs=milestone_content['items']):
-        print(RN_AUTHOR.format(author))
+
+    release_notes = templater(milestone=cli.milestone,
+                              milestone_json=milestone_content,
+                              contributors=get_contributors(milestone_prs=milestone_content['items']),
+                              template_file=cli.template)
+
+    if cli.output is None:
+        print(release_notes)
+    else:
+        file = open(cli.output, "w")
+        file.write(release_notes)
+        file.close()
+        print("Release notes saved under {}".format(cli.output))
+
     sys.exit(0)
