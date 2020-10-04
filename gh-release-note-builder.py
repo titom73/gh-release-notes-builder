@@ -24,12 +24,26 @@ import requests
 import sys
 
 # CONSTANTS
+
+# API URI to use to get Milestone information.
 GH_API_MILESTONE = "https://api.github.com/search/issues?q=milestone:{}+type:pr+repo:{}"
+# Pull Request entry line format
 PR_ENTRY = "{} (#{})"
+# Release Note format for single entry
 RN_ENTRY = "- {}"
+# Release Note format for authors.
 RN_AUTHOR = "@{}"
 
+
 def parse_cli():
+    """
+    Generate CLI options manager
+
+    Returns
+    -------
+    dict
+        dictionary with all options configured by user.
+    """
     # Argaparser to load information using CLI
     parser = argparse.ArgumentParser(
         description="Cloudvision Authentication stress script")
@@ -47,8 +61,23 @@ def parse_cli():
 
 
 def gh_get_milestone_content(repository, milestone):
-    url =GH_API_MILESTONE.format(milestone, repository)
-    logging.info("Github API url is: %s", str(url))
+    """
+    Get milestone JSON information from a given repository and milestone.
+
+    Parameters
+    ----------
+    repository : string
+        Repository name using user/repository
+    milestone : string
+        Milestone existing on the given repository
+
+    Returns
+    -------
+    dict
+        JSON provided by GH API
+    """
+    url = GH_API_MILESTONE.format(milestone, repository)
+    logging.debug("Github API url is: %s", str(url))
     gh_result = requests.get(url)
     if gh_result.status_code == 200:
         return gh_result.json()
@@ -56,6 +85,21 @@ def gh_get_milestone_content(repository, milestone):
 
 
 def is_labelled(pr, searched_label):
+    """
+    Test if given PR has searched_label configured.
+
+    Parameters
+    ----------
+    pr : dict
+        PR from GH JSON dataset
+    searched_label : string
+        label to look for on the given PR
+
+    Returns
+    -------
+    boolean
+        True if label is configured, False if not
+    """
     for label in pr['labels']:
         if label['name'] == searched_label:
             return True
@@ -63,16 +107,44 @@ def is_labelled(pr, searched_label):
 
 
 def parse_pr(milestone_prs, label):
+    """
+    Read milestone JSON and get PR information.
+
+    Parameters
+    ----------
+    milestone_prs : dict
+        JSON data from GH API
+    label : string
+        Label PR must have to be extracted.
+
+    Returns
+    -------
+    list
+        List of PRs with correct label.
+    """
     list_pr = list()
     for pr in milestone_prs:
         if is_labelled(pr, searched_label=label):
-            logging.debug('Found one PR: %s', pr['title'])
+            logging.debug('* Found one PR: %s', pr['title'])
             pr_summary = PR_ENTRY.format(pr['title'], str(pr['number']))
             list_pr.append(pr_summary)
     return list_pr
 
 
 def get_contributors(milestone_prs):
+    """
+    Extract list of PR contributors for milestone.
+
+    Parameters
+    ----------
+    milestone_prs : list
+        List or PRs attached to a milestone like pr[items]
+
+    Returns
+    -------
+    list
+        List of PR contributors.
+    """
     author = list()
     for pr in milestone_prs:
         author.append(pr['user']['login'])
@@ -80,6 +152,10 @@ def get_contributors(milestone_prs):
 
 
 if __name__ == '__main__':
+    """
+    Main section.
+    """
+
     pp = pprint.PrettyPrinter(indent=4)
     cli = parse_cli()
 
@@ -95,7 +171,7 @@ if __name__ == '__main__':
         level=LOGLEVEL,
         datefmt='%Y-%m-%d %H:%M:%S')
 
-    logging.info("Collecting information for milestone %s in repo %s", str(cli.milestone), str(cli.repository))
+    logging.debug("Collecting information for milestone %s in repo %s", str(cli.milestone), str(cli.repository))
 
     milestone_content = gh_get_milestone_content(repository=cli.repository, milestone=cli.milestone)
     # logging.debug("%s", str(pp.pprint(milestone_content)))
