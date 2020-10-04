@@ -8,4 +8,4 @@ Work In Progress
 - [ ] Add template for rendering: AVD and CVP format
 - [ ] Add section for CV supported version
 - [ ] Add Section for documentation
-- [ ] Add code documentation
+- [x] Add code documentation
