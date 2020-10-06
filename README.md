@@ -14,7 +14,7 @@ $ pip install git+https://github.com/titom73/gh-release-notes-builder.git
 ### Generic use
 
 ```shell
-$ gh-rn-builder -r <YOUR REPOSITORY> -m <YOUR MILESTONE>
+$ release-notes-github -r <YOUR REPOSITORY> -m <YOUR MILESTONE>
 ```
 
 `YOUR REPOSITORY` should be like `username/repo` and `YOUR MILESTONE` is what you configured in your project.
