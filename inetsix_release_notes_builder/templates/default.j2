@@ -1,0 +1,37 @@
+# {{ milestone_name }}
+
+## Fixed issues
+
+{% for pr in milestone_json['items'] %}
+{%    for pr_label in pr['labels'] %}
+{%        if "bug" in pr_label['name'] %}
+- {{ pr['title'] }} (#{{ pr['number'] }})
+{%        endif %}
+{%     endfor %}
+{% endfor %}
+
+## Enhancements
+
+{% for pr in milestone_json['items'] %}
+{%    for pr_label in pr['labels'] %}
+{%        if "enhancement" in pr_label['name'] %}
+- {{ pr['title'] }} (#{{ pr['number'] }})
+{%        endif %}
+{%     endfor %}
+{% endfor %}
+
+## Documentation updates
+
+{% for pr in milestone_json['items'] %}
+{%    for pr_label in pr['labels'] %}
+{%        if "documentation" in pr_label['name'] %}
+- {{ pr['title'] }} (#{{ pr['number'] }})
+{%        endif %}
+{%     endfor %}
+{% endfor %}
+
+## Contributors
+
+{% for user in contributors %}
+@{{ user }}
+{% endfor %}

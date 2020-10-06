@@ -1,0 +1,1 @@
+include inetsix_release_notes_builder/templates/*.j2
