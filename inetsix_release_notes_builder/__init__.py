@@ -60,7 +60,7 @@ def get_contributors(milestone_prs):
     return list(dict.fromkeys(author))
 
 
-def templater(milestone, milestone_json, contributors=list(), template_file=TEMPLATE_FILE):
+def templater(milestone, milestone_json, contributors=list(), template_file="default.j2"):
     """
     Generate Release Notes document based on J2 template
 
