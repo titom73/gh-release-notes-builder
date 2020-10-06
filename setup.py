@@ -9,7 +9,7 @@ setup(
     name="Github Release Notes builder",
     version="0.1",
     python_requires=">=3.6",
-    scripts=["bin/gh-rn-builder"],
+    scripts=["bin/release-notes-github"],
     packages=find_packages(),
     install_requires=required,
     include_package_data=True,

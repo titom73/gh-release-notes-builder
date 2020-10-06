@@ -24,20 +24,20 @@ By default, script uses a generic template provided [here](inetsix_release_notes
 ### Save Release Notes to a file
 
 ```
-$ gh-rn-builder -r <YOUR REPOSITORY> -m <YOUR MILESTONE> -o release-note.md
+$ release-notes-github -r <YOUR REPOSITORY> -m <YOUR MILESTONE> -o release-note.md
 ```
 
 ### Use a specific template
 
 ```shell
-$ gh-rn-builder -r <YOUR REPOSITORY> -m <YOUR MILESTONE> -t {avd|cvp}.j2
+$ release-notes-github -r <YOUR REPOSITORY> -m <YOUR MILESTONE> -t {avd|cvp}.j2
 ```
 
 ### Display help message
 
 ```shell
-$ gh-rn-builder -h
-usage: gh-rn-builder [-h] [-r REPOSITORY] [-m MILESTONE] [-t TEMPLATE]
+$ release-notes-github -h
+usage: release-notes-github [-h] [-r REPOSITORY] [-m MILESTONE] [-t TEMPLATE]
                      [-o OUTPUT] [-v VERBOSITY]
 
 Cloudvision Authentication stress script
