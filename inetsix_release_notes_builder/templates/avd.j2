@@ -1,20 +1,72 @@
 # {{ milestone_name }}
 
-## Fixed issues
+## EOS L3LS EVPN role
+
+### Fixed issues in L3LS EVPN
 
 {% for pr in milestone_json['items'] %}
+{%    set temp_var = namespace() %}
+{%    set temp_var.is_bug = false %}
 {%    for pr_label in pr['labels'] %}
-{%        if "bug" in pr_label['name'] %}
+{%      if "bug" in pr_label['name'] %}
+{%        set temp_var.is_bug = true %}
+{%      endif %}
+{%    endfor %}
+{%    for pr_label in pr['labels'] %}
+{%        if "eos_l3ls_evpn" in pr_label['name'] and temp_var.is_bug == true %}
 - {{ pr['title'] }} (#{{ pr['number'] }})
 {%        endif %}
 {%     endfor %}
 {% endfor %}
 
-## Enhancements
+### Enhancements for L3LS EVPN
 
 {% for pr in milestone_json['items'] %}
+{%    set temp_var = namespace() %}
+{%    set temp_var.is_bug = false %}
 {%    for pr_label in pr['labels'] %}
-{%        if "enhancement" in pr_label['name'] %}
+{%      if "bug" in pr_label['name'] %}
+{%        set temp_var.is_bug = true %}
+{%      endif %}
+{%    endfor %}
+{%    for pr_label in pr['labels'] %}
+{%        if "eos_l3ls_evpn" in pr_label['name'] and temp_var.is_bug == false %}
+- {{ pr['title'] }} (#{{ pr['number'] }})
+{%        endif %}
+{%     endfor %}
+{% endfor %}
+
+## EOS CLI CONFIG GEN
+
+### Fixed issues in CLI CONFIG GEN
+
+{% for pr in milestone_json['items'] %}
+{%    set temp_var = namespace() %}
+{%    set temp_var.is_bug = false %}
+{%    for pr_label in pr['labels'] %}
+{%      if "bug" in pr_label['name'] %}
+{%        set temp_var.is_bug = true %}
+{%      endif %}
+{%    endfor %}
+{%    for pr_label in pr['labels'] %}
+{%        if "eos_cli_config_gen" in pr_label['name'] and temp_var.is_bug == true %}
+- {{ pr['title'] }} (#{{ pr['number'] }})
+{%        endif %}
+{%     endfor %}
+{% endfor %}
+
+### Enhancements for CLI CONFIG GEN
+
+{% for pr in milestone_json['items'] %}
+{%    set temp_var = namespace() %}
+{%    set temp_var.is_bug = false %}
+{%    for pr_label in pr['labels'] %}
+{%      if "bug" in pr_label['name'] %}
+{%        set temp_var.is_bug = true %}
+{%      endif %}
+{%    endfor %}
+{%    for pr_label in pr['labels'] %}
+{%        if "eos_cli_config_gen" in pr_label['name'] and temp_var.is_bug == false %}
 - {{ pr['title'] }} (#{{ pr['number'] }})
 {%        endif %}
 {%     endfor %}
