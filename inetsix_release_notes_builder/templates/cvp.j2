@@ -15,7 +15,7 @@
 {% for pr in milestone_json['items'] %}
 {%    for pr_label in pr['labels'] %}
 {%        if "bug" in pr_label['name'] %}
-- {{ pr['title'] }} (#{{ pr['number'] }})
+- {{ pr['title'][0]|upper}}{{pr['title'][1:] }} (#{{ pr['number'] }})
 {%        endif %}
 {%     endfor %}
 {% endfor %}
@@ -25,7 +25,7 @@
 {% for pr in milestone_json['items'] %}
 {%    for pr_label in pr['labels'] %}
 {%        if "enhancement" in pr_label['name'] %}
-- {{ pr['title'] }} (#{{ pr['number'] }})
+- {{ pr['title'][0]|upper}}{{pr['title'][1:] }} (#{{ pr['number'] }})
 {%        endif %}
 {%     endfor %}
 {% endfor %}
@@ -33,9 +33,16 @@
 ## Documentation updates
 
 {% for pr in milestone_json['items'] %}
+{%    set temp_var = namespace() %}
+{%    set temp_var.is_doc_only = true %}
 {%    for pr_label in pr['labels'] %}
-{%        if "documentation" in pr_label['name'] %}
-- {{ pr['title'] }} (#{{ pr['number'] }})
+{%      if "cv_" in pr_label['name'] %}
+{%        set temp_var.is_doc_only = false %}
+{%      endif %}
+{%    endfor %}
+{%    for pr_label in pr['labels'] %}
+{%        if "documentation" in pr_label['name'] and temp_var.is_doc_only %}
+- {{ pr['title'][0]|upper}}{{pr['title'][1:] }} (#{{ pr['number'] }})
 {%        endif %}
 {%     endfor %}
 {% endfor %}
