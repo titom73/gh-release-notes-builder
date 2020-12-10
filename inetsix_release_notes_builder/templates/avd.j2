@@ -1,72 +1,132 @@
-# {{ milestone_name }}
-
-## EOS L3LS EVPN role
-
-### Fixed issues in L3LS EVPN
-
+{% set check = namespace() %}
+{% set check.is_bug = false %}
+{% set check.is_good_collection = false %}
+{% set check.has_data_model_changes = false %}
+{% set check.l3ls_has_bug = false %}
+{% set check.cli_has_bug = false %}
 {% for pr in milestone_json['items'] %}
-{%    set temp_var = namespace() %}
-{%    set temp_var.is_bug = false %}
+{%    for pr_label in pr['labels'] %}
+{%      if "data model change" in pr_label['name'] %}
+{%        set check.has_data_model_changes = true %}
+{%      endif %}
+{%    endfor %}
+{% endfor %}
+{% for pr in milestone_json['items'] %}
 {%    for pr_label in pr['labels'] %}
 {%      if "bug" in pr_label['name'] %}
-{%        set temp_var.is_bug = true %}
+{%        set check.is_bug = true %}
+{%      elif "eos_l3ls_evpn" in pr_label['name'] %}
+{%        set check.is_good_collection = true %}
+{%      endif %}
+{%    endfor %}
+{%    if check.is_bug == true and check.is_good_collection == true %}
+{%        set check.l3ls_has_bug = true %}
+{%    endif %}
+{%    set check.is_bug = false %}
+{%    set check.is_good_collection = false %}
+{% endfor %}
+{% for pr in milestone_json['items'] %}
+{%    for pr_label in pr['labels'] %}
+{%      if "bug" in pr_label['name'] %}
+{%        set check.is_bug = true %}
+{%      elif "eos_cli_config_gen" in pr_label['name'] %}
+{%        set check.is_good_collection = true %}
+{%      endif %}
+{%    endfor %}
+{%    if check.is_bug == true and check.is_good_collection == true %}
+{%        set check.cli_has_bug = true %}
+{%    endif %}
+{%    set check.is_bug = false %}
+{%    set check.is_good_collection = false %}
+{% endfor %}
+# {{ milestone_name }}
+{% if check.has_data_model_changes == true %}
+
+## Data Model changes
+
+{% for pr in milestone_json['items'] %}
+{%    set check.is_bug = false %}
+{%    for pr_label in pr['labels'] %}
+{%      if "data model change" in pr_label['name'] %}
+{%        set check.is_dm_change = true %}
 {%      endif %}
 {%    endfor %}
 {%    for pr_label in pr['labels'] %}
-{%        if "eos_l3ls_evpn" in pr_label['name'] and temp_var.is_bug == true %}
+{%        if "eos_l3ls_evpn" in pr_label['name'] and check.is_dm_change == true %}
 - {{ pr['title'][0]|upper}}{{pr['title'][1:] }} (#{{ pr['number'] }})
 {%        endif %}
 {%     endfor %}
 {% endfor %}
+{% endif %}
+
+## EOS L3LS EVPN role
+{% if check.l3ls_has_bug == true %}
+
+### Fixed issues in L3LS EVPN
+
+{% for pr in milestone_json['items'] %}
+{%    set check.is_bug = false %}
+{%    for pr_label in pr['labels'] %}
+{%      if "bug" in pr_label['name'] %}
+{%        set check.is_bug = true %}
+{%      endif %}
+{%    endfor %}
+{%    for pr_label in pr['labels'] %}
+{%        if "eos_l3ls_evpn" in pr_label['name'] and check.is_bug == true %}
+- {{ pr['title'][0]|upper}}{{pr['title'][1:] }} (#{{ pr['number'] }})
+{%        endif %}
+{%     endfor %}
+{% endfor %}
+{% endif %}
 
 ### Enhancements for L3LS EVPN
 
 {% for pr in milestone_json['items'] %}
-{%    set temp_var = namespace() %}
-{%    set temp_var.is_bug = false %}
+{%    set check.is_bug = false %}
 {%    for pr_label in pr['labels'] %}
 {%      if "bug" in pr_label['name'] %}
-{%        set temp_var.is_bug = true %}
+{%        set check.is_bug = true %}
 {%      endif %}
 {%    endfor %}
 {%    for pr_label in pr['labels'] %}
-{%        if "eos_l3ls_evpn" in pr_label['name'] and temp_var.is_bug == false %}
+{%        if "eos_l3ls_evpn" in pr_label['name'] and check.is_bug == false %}
 - {{ pr['title'][0]|upper}}{{pr['title'][1:] }} (#{{ pr['number'] }})
 {%        endif %}
 {%     endfor %}
 {% endfor %}
 
 ## EOS CLI CONFIG GEN
+{% if check.cli_has_bug == true %}
 
 ### Fixed issues in CLI CONFIG GEN
 
 {% for pr in milestone_json['items'] %}
-{%    set temp_var = namespace() %}
-{%    set temp_var.is_bug = false %}
+{%    set check.is_bug = false %}
 {%    for pr_label in pr['labels'] %}
 {%      if "bug" in pr_label['name'] %}
-{%        set temp_var.is_bug = true %}
+{%        set check.is_bug = true %}
 {%      endif %}
 {%    endfor %}
 {%    for pr_label in pr['labels'] %}
-{%        if "eos_cli_config_gen" in pr_label['name'] and temp_var.is_bug == true %}
+{%        if "eos_cli_config_gen" in pr_label['name'] and check.is_bug == true %}
 - {{ pr['title'][0]|upper}}{{pr['title'][1:] }} (#{{ pr['number'] }})
 {%        endif %}
 {%     endfor %}
 {% endfor %}
+{% endif %}
 
 ### Enhancements for CLI CONFIG GEN
 
 {% for pr in milestone_json['items'] %}
-{%    set temp_var = namespace() %}
-{%    set temp_var.is_bug = false %}
+{%    set check = namespace() %}
+{%    set check.is_bug = false %}
 {%    for pr_label in pr['labels'] %}
 {%      if "bug" in pr_label['name'] %}
-{%        set temp_var.is_bug = true %}
+{%        set check.is_bug = true %}
 {%      endif %}
 {%    endfor %}
 {%    for pr_label in pr['labels'] %}
-{%        if "eos_cli_config_gen" in pr_label['name'] and temp_var.is_bug == false %}
+{%        if "eos_cli_config_gen" in pr_label['name'] and check.is_bug == false %}
 - {{ pr['title'][0]|upper}}{{pr['title'][1:] }} (#{{ pr['number'] }})
 {%        endif %}
 {%     endfor %}
@@ -75,15 +135,15 @@
 ## Documentation updates
 
 {% for pr in milestone_json['items'] %}
-{%    set temp_var = namespace() %}
-{%    set temp_var.is_doc_only = true %}
+{%    set check = namespace() %}
+{%    set check.is_doc_only = true %}
 {%    for pr_label in pr['labels'] %}
 {%      if "eos_" in pr_label['name'] %}
-{%        set temp_var.is_doc_only = false %}
+{%        set check.is_doc_only = false %}
 {%      endif %}
 {%    endfor %}
 {%    for pr_label in pr['labels'] %}
-{%        if "documentation" in pr_label['name'] and temp_var.is_doc_only %}
+{%        if "documentation" in pr_label['name'] and check.is_doc_only %}
 - {{ pr['title'][0]|upper}}{{pr['title'][1:] }} (#{{ pr['number'] }})
 {%        endif %}
 {%     endfor %}
