@@ -7,7 +7,7 @@ with open('requirements.txt') as f:
 
 setup(
     name="Github Release Notes builder",
-    version="0.4",
+    version="0.5",
     python_requires=">=3.6",
     scripts=["bin/release-notes-github"],
     packages=find_packages(),
