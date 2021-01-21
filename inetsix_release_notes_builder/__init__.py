@@ -10,7 +10,7 @@ import jinja2
 # CONSTANTS
 
 # API URI to use to get Milestone information.
-GH_API_MILESTONE = "https://api.github.com/search/issues?q=milestone:{}+type:pr+repo:{}"
+GH_API_MILESTONE = "https://api.github.com/search/issues?per_page=100&q=milestone:{}+type:pr+repo:{}"
 
 __author__ = "titom73"
 __version__ = 0.1
