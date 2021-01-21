@@ -44,15 +44,33 @@
 
 ## Data Model changes
 
+### Changes in EOS L3LS EVPN role
+
 {% for pr in milestone_json['items'] %}
-{%    set check.is_bug = false %}
+{%    set check.is_dm_change = false %}
 {%    for pr_label in pr['labels'] %}
-{%      if "data model change" in pr_label['name'] %}
+{%      if "data_model_change" in pr_label['name'].replace(' ', '_') %}
 {%        set check.is_dm_change = true %}
 {%      endif %}
 {%    endfor %}
 {%    for pr_label in pr['labels'] %}
 {%        if "eos_l3ls_evpn" in pr_label['name'] and check.is_dm_change == true %}
+- {{ pr['title'][0]|upper}}{{pr['title'][1:] }} (#{{ pr['number'] }})
+{%        endif %}
+{%     endfor %}
+{% endfor %}
+
+### Changes in CLI CONFIG GEN role
+
+{% for pr in milestone_json['items'] %}
+{%    set check.is_dm_change = false %}
+{%    for pr_label in pr['labels'] %}
+{%      if "data_model_change" in pr_label['name'].replace(' ', '_') %}
+{%        set check.is_dm_change = true %}
+{%      endif %}
+{%    endfor %}
+{%    for pr_label in pr['labels'] %}
+{%        if "eos_cli_config_gen" in pr_label['name'] and check.is_dm_change == true %}
 - {{ pr['title'][0]|upper}}{{pr['title'][1:] }} (#{{ pr['number'] }})
 {%        endif %}
 {%     endfor %}
@@ -127,6 +145,23 @@
 {%    endfor %}
 {%    for pr_label in pr['labels'] %}
 {%        if "eos_cli_config_gen" in pr_label['name'] and check.is_bug == false %}
+- {{ pr['title'][0]|upper}}{{pr['title'][1:] }} (#{{ pr['number'] }})
+{%        endif %}
+{%     endfor %}
+{% endfor %}
+
+## Enhancement of collections plugins
+
+{% for pr in milestone_json['items'] %}
+{%    set check = namespace() %}
+{%    set check.is_bug = false %}
+{%    for pr_label in pr['labels'] %}
+{%      if "bug" in pr_label['name'] %}
+{%        set check.is_bug = true %}
+{%      endif %}
+{%    endfor %}
+{%    for pr_label in pr['labels'] %}
+{%        if "filters" in pr_label['name'] and check.is_bug == false %}
 - {{ pr['title'][0]|upper}}{{pr['title'][1:] }} (#{{ pr['number'] }})
 {%        endif %}
 {%     endfor %}
